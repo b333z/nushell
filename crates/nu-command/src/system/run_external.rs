@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader, Write};
-use std::path::PathBuf;
+//use std::path::PathBuf;
 use std::process::{Command as CommandSys, Stdio};
 use std::sync::atomic::Ordering;
 use std::sync::mpsc;
@@ -13,7 +13,7 @@ use nu_protocol::{Category, Example, ListStream, PipelineData, RawStream, Span, 
 use itertools::Itertools;
 
 use nu_engine::CallExt;
-use pathdiff::diff_paths;
+//use pathdiff::diff_paths;
 use regex::Regex;
 
 const OUTPUT_BUFFER_SIZE: usize = 1024;
@@ -421,44 +421,44 @@ impl ExternalCommand {
                 arg.item
             };
 
-            let cwd = PathBuf::from(cwd);
+            // let cwd = PathBuf::from(cwd);
 
-            if arg.item.contains('*') {
-                if let Ok((prefix, matches)) = nu_engine::glob_from(&arg, &cwd, self.name.span) {
-                    let matches: Vec<_> = matches.collect();
+            // if arg.item.contains('*') {
+            //     if let Ok((prefix, matches)) = nu_engine::glob_from(&arg, &cwd, self.name.span) {
+            //         let matches: Vec<_> = matches.collect();
 
-                    // FIXME: do we want to special-case this further? We might accidentally expand when they don't
-                    // intend to
-                    if matches.is_empty() {
-                        process.arg(&arg.item);
-                    }
-                    for m in matches {
-                        if let Ok(arg) = m {
-                            let arg = if let Some(prefix) = &prefix {
-                                if let Ok(remainder) = arg.strip_prefix(&prefix) {
-                                    let new_prefix = if let Some(pfx) = diff_paths(&prefix, &cwd) {
-                                        pfx
-                                    } else {
-                                        prefix.to_path_buf()
-                                    };
+            //         // FIXME: do we want to special-case this further? We might accidentally expand when they don't
+            //         // intend to
+            //         if matches.is_empty() {
+            //             process.arg(&arg.item);
+            //         }
+            //         for m in matches {
+            //             if let Ok(arg) = m {
+            //                 let arg = if let Some(prefix) = &prefix {
+            //                     if let Ok(remainder) = arg.strip_prefix(&prefix) {
+            //                         let new_prefix = if let Some(pfx) = diff_paths(&prefix, &cwd) {
+            //                             pfx
+            //                         } else {
+            //                             prefix.to_path_buf()
+            //                         };
 
-                                    new_prefix.join(remainder).to_string_lossy().to_string()
-                                } else {
-                                    arg.to_string_lossy().to_string()
-                                }
-                            } else {
-                                arg.to_string_lossy().to_string()
-                            };
+            //                         new_prefix.join(remainder).to_string_lossy().to_string()
+            //                     } else {
+            //                         arg.to_string_lossy().to_string()
+            //                     }
+            //                 } else {
+            //                     arg.to_string_lossy().to_string()
+            //                 };
 
-                            process.arg(&arg);
-                        } else {
-                            process.arg(&arg.item);
-                        }
-                    }
-                }
-            } else {
-                process.arg(&arg.item);
-            }
+            //                 process.arg(&arg);
+            //             } else {
+            process.arg(&arg.item);
+            //             }
+            //         }
+            //     }
+            // } else {
+            //     process.arg(&arg.item);
+            // }
         }
 
         Ok(process)
